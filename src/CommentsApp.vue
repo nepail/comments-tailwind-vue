@@ -2,7 +2,7 @@
     <main class="p-4 bg-gray-50 min-h-screen">
         <div class="max-w-screen-xl mx-auto bg-white p-8 rounded-lg shadow-2xl">
             <h2 class="text-3xl my-6">評論</h2>
-            <CommentsBox></CommentsBox>
+            <CommentsBox @submit="addNewComment"></CommentsBox>
             <DividerHorizontal />
             <div v-for="comment in comments" :key="comment.id">
             
@@ -13,7 +13,7 @@
                     :content="comment.content"
                 />
 
-                <ReplayBox v-if="comment.replies">
+                <ReplyContainer v-if="comment.replies">
                     <CommentsItem 
                         v-for="reply in comment.replies"
                         :key="reply.id"
@@ -22,7 +22,8 @@
                         :time="reply.time"
                         :content="reply.content"
                     />
-                </ReplayBox>
+                </ReplyContainer>
+                <ReplyBox @submit="addReply($event, comment.id)" />
             </div>
         </div>
     </main>
@@ -32,13 +33,18 @@
 import CommentsBox from './components/CommentsBox.vue';
 import DividerHorizontal from './components/DividerHorizontal.vue';
 import CommentsItem from './components/CommentsItem.vue';
-import ReplayBox from './components/ReplayBox.vue';
+import ReplyBox from './components/ReplayBox.vue';
+import ReplyContainer from './components/ReplyContainer.vue'
 
 import face1 from "./assets/face01.jpg";
 import face2 from "./assets/face02.jpg";
 import face3 from "./assets/face03.jpg";
+import face4 from "./assets/face04.jpg";
+import { ref } from 'vue'
 
-const comments = [
+let rid = ref(4);
+
+const comments = ref([
     {
         id: 1,
         user: "Jorden Chen",
@@ -63,7 +69,32 @@ const comments = [
             }
         ]
     }
-]
+])
+
+const constructNewComment = (content) => {
+    return {
+        id: rid.value++,
+        user: "當前用戶",
+        avatar: face4,
+        content,
+        time: "1秒前",
+    };
+};
+
+const addNewComment = (content) => {
+    const newComments = constructNewComment(content);
+    comments.value.push(newComments);
+}
+
+const addReply = (content, id) => {
+    const reply = constructNewComment(content);
+    let comment = comments.value.find((comment) => comment.id === id);
+    if(comment.replies) {
+        comment.replies.push(reply);
+    } else {
+        comment.replies = [reply];
+    }
+}
 
 </script>
 

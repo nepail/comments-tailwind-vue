@@ -1,11 +1,27 @@
 <template>
-    <div class="pl-8 border-l-2 border-gray-200">
-    <slot/>
-    </div>
-    <button class="pt-4 pb-10 text-blue-600">回覆</button>
+    <button 
+        class="pt-4 pb-10 text-blue-600"
+        :class="[showCommentBox ? 'pb-2' : 'pb-10']"
+        @click="showCommentBox = !showCommentBox"
+    >回覆</button>
+    <CommentBox 
+        v-if="showCommentBox" 
+        class="mb-4" 
+        @submit="
+            emit('submit', $event);
+            showCommentBox = false;
+        "
+    />
 </template>
 
-<script setup></script>
+<script setup>
+    import { ref } from "vue";
+    import CommentBox from "./CommentsBox.vue"
+
+    const showCommentBox = ref(false);
+
+    const emit = defineEmits(["submit"])
+</script>
 
 <style>
 
